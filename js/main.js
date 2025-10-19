@@ -6,7 +6,6 @@
   const txt = splash.querySelector('.spinTxt');
 
   function proceed(){
-    // segura 2s com texto parado, depois fade do texto e do splash
     txt.classList.add('hold');
     setTimeout(() => {
       txt.classList.add('fadeText');
@@ -14,21 +13,14 @@
       setTimeout(() => {
         splash.remove();
         window.__miniGame.start();
-      }, 720); // após o fade do splash
+      }, 720);
     }, 2000);
   }
 
   txt.addEventListener('animationend', proceed);
+  const failSafe = setTimeout(() => { if (document.getElementById('splash')) proceed(); }, 2500);
 
-  // Fallback: se 'animationend' não disparar (alguns celulares), seguimos em 2.5s
-  const failSafe = setTimeout(() => {
-    if (document.getElementById('splash')) proceed();
-  }, 2500);
-
-
-  // tocar/ clicar também já considera um gesto p/ áudio no mobile
   splash.addEventListener('pointerdown', () => {
-    // pula direto para o estado final do giro
     txt.style.animationPlayState = 'paused';
     txt.style.transform = 'rotateY(720deg)';
     txt.dispatchEvent(new Event('animationend'));

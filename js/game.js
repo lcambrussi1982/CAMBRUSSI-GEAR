@@ -1,5 +1,5 @@
 
-// js/game.js — Cambrussi Gear v10 (top-down lanes) — Cambrussi Games Inc.
+// js/game.js — Cambrussi Gear v10.4 (mobile controls + CSS) — Cambrussi Games Inc.
 (() => {
   'use strict';
 
@@ -12,6 +12,7 @@
     score: document.getElementById('hudScore'),
     time:  document.getElementById('hudTime'),
   };
+  const tapHelper = document.getElementById('tapToStart');
 
   // Overlays
   const O = {
@@ -26,7 +27,7 @@
     initials: document.getElementById('initials'),
   };
 
-  // Simple audio manager using <audio> tags (mobile friendly)
+  // Audio manager (<audio> tags, mobile friendly)
   const Sound = {
     enabled: true,
     a: {},
@@ -56,7 +57,6 @@
         if(base.paused) { try{ base.currentTime = 0; base.play(); }catch(e){} }
         return;
       }
-      // clone to allow overlap
       const el = base.cloneNode();
       el.volume = base.volume;
       try{ el.play(); }catch(e){}
@@ -75,8 +75,8 @@
   };
 
   // Storage (leaderboard)
-  const LS_KEY = 'cg_board_v2';
-  const LS_BEST = 'cg_best_v2';
+  const LS_KEY = 'cg_board_v3';
+  const LS_BEST = 'cg_best_v3';
   function loadBoard(){ try{ return JSON.parse(localStorage.getItem(LS_KEY)||'[]'); }catch(e){ return []; } }
   function saveBoard(board){ try{ localStorage.setItem(LS_KEY, JSON.stringify(board.slice(0,10))); }catch(e){} }
   function updateBoardUI(){
@@ -143,10 +143,11 @@
   };
 
   // Controls mode
-  // 0 = Swipe (recomendado p/ celular) | 1 = Botões (setas na tela)
-  let controlsMode = 0;
+  // 0 = Swipe (recomendado) | 1 = Botões grandes
+  let controlsMode = 1; // força botões por padrão no mobile
   const isMobile = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile/i.test(navigator.userAgent);
-  if(isMobile) controlsMode = 1;
+  const controlsEl = document.querySelector('.controls');
+  if(controlsEl) controlsEl.style.display = controlsMode===1? 'grid':'none';
 
   // Input
   const input = { left:false, right:false, accel:false, brake:false };
@@ -155,12 +156,9 @@
     const set=v=>{ input[act]=v; pressing=v; };
     const on = e=>{ set(true); e.preventDefault(); if(act==='left') laneLeft(); if(act==='right') laneRight(); };
     const off= e=>{ set(false); e.preventDefault(); };
-    btn.addEventListener('touchstart',on,{passive:false});
-    btn.addEventListener('touchend',off,{passive:false});
-    btn.addEventListener('touchcancel',off,{passive:false});
-    btn.addEventListener('mousedown',on);
-    btn.addEventListener('mouseup',off);
-    btn.addEventListener('mouseleave',()=>pressing&&off(new Event('mouseleave')));
+    btn.addEventListener('pointerdown', on, {passive:false});
+    btn.addEventListener('pointerup', off, {passive:false});
+    btn.addEventListener('pointercancel', off, {passive:false});
   }
   function bindKeys(){
     const keyMap={ArrowLeft:'left',KeyA:'left',ArrowRight:'right',KeyD:'right',ArrowUp:'accel',KeyW:'accel',Space:'accel',ArrowDown:'brake',KeyS:'brake',KeyP:'pause',Escape:'pause'};
@@ -176,7 +174,7 @@
     });
     addEventListener('keyup',e=>{ const k=keyMap[e.code]; if(k && k!=='pause'){ input[k]=false; e.preventDefault(); }});
   }
-  // Swipe controls
+  // Swipe (se ativado)
   let swipeX=null, swipeY=null;
   addEventListener('touchstart', e=>{
     if(controlsMode!==0) return;
@@ -191,17 +189,13 @@
     if(Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)){
       if(dx<0) laneLeft(); else laneRight();
     }
-    // bottom right accel, bottom left brake (zones)
-    const zoneY = window.innerHeight*0.65;
-    if(t.clientY > zoneY){
-      if(t.clientX > window.innerWidth*0.5) input.accel=true;
-      else input.brake=true;
-      setTimeout(()=>{ input.accel=false; input.brake=false; }, 120);
-    }
   }, {passive:true});
 
   function laneLeft(){ player.targetLane = Math.max(0, player.targetLane-1); Sound.play('lane'); }
   function laneRight(){ player.targetLane = Math.min(TRACK.lanes-1, player.targetLane+1); Sound.play('lane'); }
+
+  // Prevent scroll only on canvas
+  cvs.addEventListener('touchmove', (e)=>{ e.preventDefault(); }, { passive:false });
 
   // Draw helpers
   function drawBackground(){
@@ -220,13 +214,9 @@
   function drawTrack(){
     const r=roadRect();
     const shoulder=TRACK.shoulder;
-    // Grass
     ctx.fillStyle='#0b3a29'; ctx.fillRect(0,0,W,H);
-    // Shoulders
     ctx.fillStyle='#a22'; ctx.fillRect(r.x-shoulder,0,shoulder,H); ctx.fillRect(r.x+r.w,0,shoulder,H);
-    // Road
     ctx.fillStyle='#2a2f3a'; ctx.fillRect(r.x,0,r.w,H);
-    // Lanes
     ctx.strokeStyle='#f2f5ff'; ctx.lineWidth=3; ctx.setLineDash([TRACK.lineLen,TRACK.lineGap]);
     const laneW=r.w/TRACK.lanes;
     for(let i=1;i<TRACK.lanes;i++){ const x=r.x+laneW*i; ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
@@ -265,7 +255,7 @@
     ctx.restore();
   }
 
-  // Update loop
+  // Spawn/update
   function spawnTraffic(dt){
     const rel = player.speed/300;
     const base = 0.9 - difficulty*0.18;
@@ -343,11 +333,9 @@
   function update(dt){
     if(state!==STATE.PLAY) return;
 
-    // timers
     if(shieldT>0) shieldT-=dt;
     if(slowT>0)   slowT-=dt;
 
-    // speed control
     const accelBoost = input.accel? 1.3 : 1.0;
     const slowMul = slowT>0? 0.6 : 1.0;
     const effAccel = player.accel*accelBoost*slowMul;
@@ -360,20 +348,17 @@
     const diffCap = [320, 360, 400][difficulty] || 360;
     player.speed = Math.max(0, Math.min(player.speed, diffCap));
 
-    // lane change with no overshoot (fix jitter) + snap when close
+    // lane change no-overshoot + snap (anti jitter)
     {
       const delta = player.targetLane - player.lane;
-      const step = 10 * dt; // lane change speed
+      const step = 10 * dt;
       if (Math.abs(delta) <= step) player.lane = player.targetLane;
       else player.lane += Math.sign(delta) * step;
-      // clamp + final snap
       if (Math.abs(player.lane - player.targetLane) < 1e-3) player.lane = player.targetLane;
       player.lane = Math.max(0, Math.min(TRACK.lanes-1, player.lane));
     }
-    // fine offset back to center
-    player.x = (Math.abs(player.x)<0.02)?0: (player.x*0.85);
 
-    // spawn & move traffic
+    // spawn & move
     spawnTraffic(dt);
     spawnPickup(dt);
     const worldScroll = (player.speed/320) * (slowT>0?0.7:1);
@@ -392,7 +377,7 @@
     // score by distance
     score += (player.speed*dt*0.4)|0;
 
-    // engine sound rate
+    // engine pitch
     Sound.engineRate(0.6 + player.speed/300);
   }
 
@@ -406,7 +391,6 @@
     })();
   }
 
-  // Title
   function drawTitle(){
     ctx.save();
     ctx.textAlign='center'; ctx.fillStyle='#ff2d2d';
@@ -419,30 +403,24 @@
 
   function render(){
     ctx.clearRect(0,0,W,H);
-    // bg & track
     drawBackground();
     drawTrack();
-    // pickups
     const scale = Math.max(1, Math.floor(W*0.05/16));
     for(const p of pickups){
       const cx = laneCenterPx(p.lane);
       const cy = H*p.y;
       drawSpriteImg(p.sprite, cx, cy, scale);
     }
-    // traffic
     const sCar = Math.max(1, Math.floor(W*0.06/16));
     for(const c of traffic){
       const cx = laneCenterPx(c.lane);
       const cy = H*c.y;
       drawCar(c.sprite, cx, cy, sCar);
     }
-    // player
     const playerCX = laneCenterPx(player.lane);
     const playerCY = H*player.y;
-    // pixel snapping already inside drawCar, values can be float here
     drawCar(player.sprite, playerCX, playerCY, sCar);
     drawShieldEffect(playerCX, playerCY, sCar*12);
-
     drawTitle();
     drawHUD();
   }
@@ -467,21 +445,22 @@
     if(name==='gameover') O.gameover.classList.remove('hidden');
   }
   function toMenu(){
-    document.querySelector('.controls').style.display = controlsMode===1? 'grid':'none';
     state = STATE.MENU;
     showOverlay('menu');
     updateBoardUI();
     O.ctlLabel.textContent = controlsMode===0? 'Swipe':'Botões';
+    if(tapHelper) tapHelper.classList.remove('hiddenTap');
   }
   function startGame(){
     lives = 3; score = 0; player.speed = 0; shieldT=0; slowT=0;
     player.lane = 1; player.targetLane = 1; traffic.length=0; pickups.length=0;
-    best = parseInt(localStorage.getItem('cg_best_v2')||'0',10);
+    best = parseInt(localStorage.getItem(LS_BEST)||'0',10);
     tStart = performance.now();
     state = STATE.PLAY;
     showOverlay('');
     Sound.play('start');
     Sound.play('engine');
+    if(tapHelper) tapHelper.classList.add('hiddenTap');
   }
   function togglePause(){
     if(state===STATE.PLAY){ state=STATE.PAUSE; showOverlay('pause'); Sound.play('pause'); Sound.stop('engine'); }
@@ -499,13 +478,12 @@
   function toggleControls(){
     controlsMode = (controlsMode+1)%2;
     O.ctlLabel.textContent = controlsMode===0? 'Swipe':'Botões';
-    document.querySelector('.controls').style.display = controlsMode===1? 'grid':'none';
+    if(controlsEl) controlsEl.style.display = controlsMode===1? 'grid':'none';
   }
   function restart(){ startGame(); }
   function backToMenu(){ toMenu(); }
 
-  // Overlay buttons
-  // Handlers diretos para botões (pointerup = mais confiável no mobile)
+  // Overlay buttons: pointerdown/up/click (robusto)
   function handleCmd(cmd){
     if(cmd==='start') startGame();
     else if(cmd==='difficulty') changeDifficulty();
@@ -521,46 +499,30 @@
       board.push({name, score: score|0});
       board.sort((a,b)=>b.score-a.score);
       saveBoard(board);
-      localStorage.setItem('cg_best_v2', String(Math.max(best, score|0)));
+      localStorage.setItem(LS_BEST, String(Math.max(best, score|0)));
       O.initials.value='';
       updateBoardUI();
       backToMenu();
     }
   }
   document.querySelectorAll('button[data-cmd]').forEach(btn=>{
-    btn.addEventListener('pointerup', (e)=>{
-      const cmd = btn.dataset.cmd; handleCmd(cmd);
-    });
+    const go = ()=>{ const cmd = btn.dataset.cmd; handleCmd(cmd); };
+    btn.addEventListener('pointerdown', go, {passive:true});
+    btn.addEventListener('pointerup', go, {passive:true});
+    btn.addEventListener('click', go);
   });
 
-  addEventListener('click', (e)=>{
-    const btn = e.target.closest('button[data-cmd]');
-    if(!btn) return;
-    const cmd = btn.dataset.cmd;
-    if(cmd==='start') startGame();
-    else if(cmd==='difficulty') changeDifficulty();
-    else if(cmd==='sound') toggleSound();
-    else if(cmd==='controls') toggleControls();
-    else if(cmd==='credits') { alert('Cambrussi Gear — Cambrussi Games Inc.'); }
-    else if(cmd==='resume') togglePause();
-    else if(cmd==='restart') restart();
-    else if(cmd==='menu') backToMenu();
-    else if(cmd==='saveScore'){
-      const name = (O.initials.value||'---').slice(0,8);
-      const board = loadBoard();
-      board.push({name, score: score|0});
-      board.sort((a,b)=>b.score-a.score);
-      saveBoard(board);
-      localStorage.setItem('cg_best_v2', String(Math.max(best, score|0)));
-      O.initials.value='';
-      updateBoardUI();
-      backToMenu();
+  // Tap-to-start: qualquer toque no canvas/teclado Enter quando no MENU
+  function onTapStart(){ if(state===STATE.MENU){ startGame(); } }
+  cvs.addEventListener('pointerdown', onTapStart, {passive:true});
+  document.addEventListener('keydown', (e)=>{ if(e.code==='Enter') onTapStart(); }, {passive:true});
+
+  // Auto pause on background
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      if (state===STATE.PLAY) { state=STATE.PAUSE; showOverlay('pause'); Sound.stop('engine'); }
     }
   });
-
-
-  // Evita scroll durante gestos de jogo
-  window.addEventListener('touchmove', (e)=>{ e.preventDefault(); }, { passive:false });
 
   // Bind inputs
   document.querySelectorAll('.controls .btn').forEach(bindTouchButtons);
@@ -568,8 +530,6 @@
 
   // Public API
   async function load(){
-    // garante controles na tela se mobile
-    document.querySelector('.controls').style.display = controlsMode===1? 'grid':'none';
     [A.bg, A.carRed, A.carYellow, A.carPurple, A.carGreen, A.pu_shield, A.pu_slow, A.pu_life, A.pu_coin] = await Promise.all([
       loadImage('assets/bg_tile.png'),
       loadImage('assets/car_red.png'),
@@ -584,16 +544,6 @@
     ]);
     Sound.load();
   }
-
-
-  // Auto pause on background (mobile friendly)
-  document.addEventListener('visibilitychange', () => {
-    if (document.hidden) {
-      if (state===STATE.PLAY) { state=STATE.PAUSE; showOverlay('pause'); Sound.stop('engine'); }
-    } else {
-      // do nothing; user can retomar
-    }
-  });
 
   window.__miniGame = {
     async start(){

@@ -11,6 +11,7 @@ body{
   color:var(--ink);
   font:500 14px/1.4 system-ui, Segoe UI, Roboto, Ubuntu, Arial;
   touch-action:none;
+  overscroll-behavior:none;
 }
 
 canvas{
@@ -19,6 +20,7 @@ canvas{
   height:100svh;
   image-rendering:pixelated;
   image-rendering:crisp-edges;
+  z-index:1;
 }
 
 /* HUD */
@@ -26,7 +28,7 @@ canvas{
   position:fixed; inset:auto 0 0 0;
   display:flex; gap:.5rem; justify-content:center;
   padding:.4rem 0;
-  pointer-events:none;
+  pointer-events:none; z-index:5;
 }
 .hud .tag{
   font-family:var(--fontGame);
@@ -38,7 +40,7 @@ canvas{
 }
 
 /* Overlays */
-.overlay{ position:fixed; inset:0; display:grid; place-items:center; background:rgba(3,6,12,0.6) }
+.overlay{ position:fixed; inset:0; display:grid; place-items:center; background:rgba(3,6,12,0.6); z-index:8 }
 .overlay.hidden{ display:none }
 .panel{
   width:min(520px, 92vw);
@@ -50,8 +52,9 @@ canvas{
 .panel .brand{ text-align:center; opacity:.85; margin-top:-4px; margin-bottom:12px }
 .panel .opts{ display:grid; gap:10px; margin-top:10px }
 .panel .opts button{
-  font-family:var(--fontGame); font-size:12px; padding:10px; border-radius:10px;
+  font-family:var(--fontGame); font-size:12px; padding:12px; border-radius:10px;
   background:#ffffff14; border:1px solid #ffffff2c; color:#fff; cursor:pointer;
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
 }
 .panel .opts input{
   font-family:var(--fontGame); font-size:12px; padding:10px; border-radius:10px;
@@ -63,26 +66,12 @@ canvas{
 
 .panel.small{ width:min(420px, 92vw) }
 
-/* Touch controls */
-.controls{
-  pointer-events:none;
-  position:fixed; inset:0;
-  display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr
-}
-.btn{pointer-events:auto}
-.btn.half{background:radial-gradient(closest-side,#ffffff12,#0000)}
-.btn.left{grid-column:1;grid-row:1/span 2}
-.btn.right{grid-column:2;grid-row:1/span 2}
-.btn.brake{grid-column:1;grid-row:2}
-.btn.accel{grid-column:2;grid-row:2}
-@media (min-width:900px){ .btn.half{display:none} }
-
 /* Splash (2 giros + 2s hold + fade) */
 .splash{
   position:fixed; inset:0;
   display:grid; place-items:center;
   background:radial-gradient(120% 120% at 50% 50%, var(--bgA) 0%, var(--bgB) 70%);
-  z-index:10;
+  z-index:20;
 }
 .spinWrap{perspective:1000px; display:grid; gap:10px; place-items:center}
 .spinTxt{
@@ -103,15 +92,54 @@ canvas{
 .splash.fade{animation:fadeout .7s ease forwards}
 @keyframes fadeout{to{opacity:0;visibility:hidden}}
 
-
-/* Reduce motion: no spin, apenas hold + fade */
+/* Reduce motion */
 @media (prefers-reduced-motion: reduce){
   .spinTxt{ animation: none }
 }
 
-/* Evita overscroll bounce em navegadores compatíveis */
-html, body { overscroll-behavior: none; }
+/* === Controles Mobile (grandes) === */
+.controls{
+  position:fixed; inset:0; z-index:6;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  grid-template-rows:1fr 1fr;
+  pointer-events:none;
+  padding:1.2rem;
+}
+.controls .btn{
+  pointer-events:auto;
+  border:none; outline:none;
+  background:radial-gradient(closest-side,#0b0e22,#070a18);
+  border:2px solid #2b335f;
+  box-shadow:0 6px 18px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06);
+  border-radius:16px;
+  min-height:80px;
+  touch-action:manipulation;
+  opacity:0.94;
+}
+.controls .btn:active{ transform:translateY(1px); opacity:1; }
+.controls .left{ grid-column:1; grid-row:1/span 2; margin-right:.6rem }
+.controls .right{ grid-column:2; grid-row:1/span 2; margin-left:.6rem }
+.controls .brake{ grid-column:1; grid-row:2; margin-right:.6rem; background:#351313; border-color:#6a2a2a }
+.controls .accel{ grid-column:2; grid-row:2; margin-left:.6rem; background:#13351a; border-color:#2a6a3d }
 
+.controls .left::before, .controls .right::before, .controls .accel::before, .controls .brake::before{
+  content:""; display:block; margin:auto; width:0; height:0; border-style:solid;
+}
+.controls .left::before { border-width:20px 26px 20px 0; border-color:transparent #bcdcff transparent transparent; margin-top:26px }
+.controls .right::before{ border-width:20px 0 20px 26px; border-color:transparent transparent transparent #bcdcff; margin-top:26px }
+.controls .accel::before{ content:""; width:56px; height:16px; background:#b7ffb7; border-radius:9px; margin-top:28px }
+.controls .brake::before{ content:""; width:56px; height:16px; background:#ffb7b7; border-radius:9px; margin-top:28px }
 
-/* Melhor toque em botões no iOS/Android */
-button { -webkit-tap-highlight-color: rgba(0,0,0,0); }
+@media (min-width:900px){
+  .controls{ display:none } /* só mobile */
+}
+
+/* Tap-to-start helper */
+.tapStart{
+  position:fixed; left:0; right:0; bottom:14vh; text-align:center; z-index:7;
+  font-family:var(--fontGame); font-size:12px; letter-spacing:1px;
+  color:#eaf2ff; text-shadow:0 2px 0 #0008;
+  opacity:.8; pointer-events:none;
+}
+.hiddenTap{ display:none }

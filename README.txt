@@ -1,25 +1,20 @@
-Cambrussi Gear — 8-bit (v10, mobile + sons)
-==========================================
+Cambrussi Gear — 8-bit (v10.4, mobile controls + CSS)
+====================================================
 Marca: Cambrussi Games Inc.
 
-Novidades:
-- Pasta **/assets/sounds** com WAVs (start, hit, coin, power, pause, over, lane, engine loop).
-- Motor com som contínuo e variação pela velocidade; opção Som On/Off no menu.
-- Splash “cambrussi games inc.” agora: gira 2x, **espera 2 segundos**, faz **fade** suave e entra no jogo.
-- Controles mobile aprimorados: **Swipe** para trocar de faixa + áreas de **Acelerar/Frear**; opção de alternar para **Botões** na tela.
-- Tudo mobile-first e pronto para rodar em celular.
+O que há nessa versão:
+- **Botões grandes** sempre disponíveis no celular (Esquerda, Direita, Acelerar, Frear).
+- **Tap-to-Start** (tocar no canvas inicia se o botão Start não responder).
+- **Pointer handlers** (pointerdown/pointerup/click) para maior compatibilidade em navegadores móveis.
+- **CSS revisado**: botões maiores, z-index correto, overlays acima do canvas.
+- Sons 8-bit + motor, leaderboard local, power-ups, dificuldades, pausa automática ao sair do app.
+- Splash “cambrussi games inc.” gira 2x, segura 2s e some.
 
-Como jogar (mobile):
-- **Swipe esquerda/direita**: trocar de faixa.
-- **Toque/segure no canto inferior direito**: acelerar.
-- **Toque/segure no canto inferior esquerdo**: frear.
-- No menu, você pode mudar para **Botões** (setas na tela).
+Dica para GitHub Pages / iOS:
+- Publique os arquivos e aguarde o cache atualizar ou force **Hard Refresh**.
+- Em iOS, o **primeiro toque** habilita áudio. Toque no splash ou no menu.
 
-Teclado (desktop): Setas/WASD, Espaço acelera, S/↓ freia, P/Esc pausa.
-
-Arquivos principais:
-- index.html, style.css, js/game.js, js/main.js
-- assets: car_* .png, pu_*.png, bg_tile.png
-- assets/sounds: *.wav
+Como rodar local:
+- Python: `python3 -m http.server 8000` e abra no celular: `http://IP_DO_SEU_PC:8000`.
 
 Bom jogo!
