@@ -26,7 +26,7 @@ body{
     radial-gradient(140% 120% at 20% 10%, #13204a 0%, transparent 50%),
     radial-gradient(140% 140% at 80% 80%, #1c2f6a 0%, transparent 52%),
     linear-gradient(var(--bgA),var(--bgB));
-  color:var(--ink);
+  color:#eaf2ff;
   font:500 14px/1.4 system-ui, Segoe UI, Roboto, Ubuntu, Arial;
   touch-action:none; overscroll-behavior:none;
   -webkit-user-select:none; user-select:none;
@@ -76,7 +76,7 @@ canvas{
 }
 .panel h1{
   font-family:var(--fontGame);
-  font-size:clamp(18px,7vw,28px);
+  font-size:clamp(18px, 7vw, 28px);
   margin:0 0 10px; color:var(--accent); text-align:center;
   text-shadow:0 2px 0 #0008, 0 0 18px #ff375f66;
 }
@@ -99,7 +99,7 @@ canvas{
 }
 .panel.small{ width:min(420px, 92vw) }
 
-/* ===== Splash (centrado e menor no mobile, com -webkit- animação) ===== */
+/* ===== Splash (menor & central) ===== */
 .splash{
   position:fixed; inset:0;
   display:grid; place-items:center; text-align:center;
@@ -114,7 +114,7 @@ canvas{
   width:100%; height:100%;
 }
 .spinTxt{
-  font:900 clamp(16px, 7.2vw, 42px)/1 var(--fontGame); /* menor no mobile */
+  font:900 clamp(16px, 7.2vw, 42px)/1 var(--fontGame);
   color:var(--accent);
   text-transform:uppercase;
   text-shadow:0 2px 0 #000a, 0 0 20px #ff375f72;
@@ -188,13 +188,12 @@ canvas{
   box-shadow:0 0 16px rgba(166,247,190,.65), inset 0 0 3px #fff;
 }
 
-/* — Esquerda/Direita (lado a lado no canto esquerdo) — */
+/* — Esquerda/Direita lado a lado no canto esquerdo — */
 .controls .left,
 .controls .right{
   bottom: calc(2.2vh + env(safe-area-inset-bottom));
   left:  calc(2vw + env(safe-area-inset-left));
 }
-/* direita ao lado da esquerda */
 .controls .right{
   left: calc(2vw + env(safe-area-inset-left) + var(--btnSize) + var(--btnGap));
 }

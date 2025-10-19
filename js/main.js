@@ -1,28 +1,35 @@
-
-// js/main.js — Splash (2 giros) com "cambrussi games inc." segura 2s e fade
+// Splash: 2 giros, segura 2s, fade e entra no jogo. Tap em qualquer lugar também pula.
 (() => {
   'use strict';
   const splash = document.getElementById('splash');
   const txt = splash.querySelector('.spinTxt');
 
-  function proceed(){
-    txt.classList.add('hold');
+  function proceed() {
+    txt.classList.add('hold');                 // para no final do giro
     setTimeout(() => {
-      txt.classList.add('fadeText');
-      splash.classList.add('fade');
+      txt.classList.add('fadeText');           // some o texto
+      splash.classList.add('fade');            // fade do backdrop
       setTimeout(() => {
         splash.remove();
-        window.__miniGame.start();
+        if (window.__miniGame && window.__miniGame.start) {
+          window.__miniGame.start();
+        }
       }, 720);
-    }, 2000);
+    }, 2000); // 2s parado
   }
 
-  txt.addEventListener('animationend', proceed);
-  const failSafe = setTimeout(() => { if (document.getElementById('splash')) proceed(); }, 2500);
+  // fim da animação => executa sequência
+  txt.addEventListener('animationend', proceed, { once: true });
 
+  // fail-safe (se animação for bloqueada no iOS antigo)
+  setTimeout(() => {
+    if (document.getElementById('splash')) proceed();
+  }, 2500);
+
+  // toque para pular imediatamente (fixo em mobile)
   splash.addEventListener('pointerdown', () => {
     txt.style.animationPlayState = 'paused';
     txt.style.transform = 'rotateY(720deg)';
-    txt.dispatchEvent(new Event('animationend'));
+    proceed();
   }, { once: true });
 })();
