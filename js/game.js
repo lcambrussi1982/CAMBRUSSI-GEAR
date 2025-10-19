@@ -75,6 +75,9 @@
   };
 
   // Storage (leaderboard)
+  function lsGet(k, def){ try{ const v = localStorage.getItem(k); return (v==null? def : v); }catch(e){ return def; } }
+  function lsSet(k, v){ try{ localStorage.setItem(k, v); }catch(e){} }
+
   const LS_KEY = 'cg_board_v3';
   const LS_BEST = 'cg_best_v3';
   function loadBoard(){ try{ return JSON.parse(localStorage.getItem(LS_KEY)||'[]'); }catch(e){ return []; } }
@@ -454,7 +457,7 @@
   function startGame(){
     lives = 3; score = 0; player.speed = 0; shieldT=0; slowT=0;
     player.lane = 1; player.targetLane = 1; traffic.length=0; pickups.length=0;
-    best = parseInt(localStorage.getItem(LS_BEST)||'0',10);
+    best = parseInt(lsGet(LS_BEST,'0'),10);
     tStart = performance.now();
     state = STATE.PLAY;
     showOverlay('');
@@ -499,7 +502,7 @@
       board.push({name, score: score|0});
       board.sort((a,b)=>b.score-a.score);
       saveBoard(board);
-      localStorage.setItem(LS_BEST, String(Math.max(best, score|0)));
+      lsSet(LS_BEST, String(Math.max(best, score|0)));
       O.initials.value='';
       updateBoardUI();
       backToMenu();
@@ -509,6 +512,7 @@
     const go = ()=>{ const cmd = btn.dataset.cmd; handleCmd(cmd); };
     btn.addEventListener('pointerdown', go, {passive:true});
     btn.addEventListener('pointerup', go, {passive:true});
+    btn.addEventListener('touchend', go, {passive:true});
     btn.addEventListener('click', go);
   });
 
@@ -516,6 +520,14 @@
   function onTapStart(){ if(state===STATE.MENU){ startGame(); } }
   cvs.addEventListener('pointerdown', onTapStart, {passive:true});
   document.addEventListener('keydown', (e)=>{ if(e.code==='Enter') onTapStart(); }, {passive:true});
+
+  
+  // Tap anywhere on menu overlay (outside buttons/inputs) to Start (mobile-friendly)
+  O.menu.addEventListener('pointerdown', (e)=>{
+    if (state!==STATE.MENU) return;
+    if (e.target.closest('button,[data-cmd],input')) return; // não intercepta botões/opções
+    startGame();
+  }, {passive:true});
 
   // Auto pause on background
   document.addEventListener('visibilitychange', () => {
