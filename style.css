@@ -102,3 +102,16 @@ canvas{
 
 .splash.fade{animation:fadeout .7s ease forwards}
 @keyframes fadeout{to{opacity:0;visibility:hidden}}
+
+
+/* Reduce motion: no spin, apenas hold + fade */
+@media (prefers-reduced-motion: reduce){
+  .spinTxt{ animation: none }
+}
+
+/* Evita overscroll bounce em navegadores compatíveis */
+html, body { overscroll-behavior: none; }
+
+
+/* Melhor toque em botões no iOS/Android */
+button { -webkit-tap-highlight-color: rgba(0,0,0,0); }

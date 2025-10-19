@@ -145,6 +145,8 @@
   // Controls mode
   // 0 = Swipe (recomendado p/ celular) | 1 = Botões (setas na tela)
   let controlsMode = 0;
+  const isMobile = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile/i.test(navigator.userAgent);
+  if(isMobile) controlsMode = 1;
 
   // Input
   const input = { left:false, right:false, accel:false, brake:false };
@@ -465,6 +467,7 @@
     if(name==='gameover') O.gameover.classList.remove('hidden');
   }
   function toMenu(){
+    document.querySelector('.controls').style.display = controlsMode===1? 'grid':'none';
     state = STATE.MENU;
     showOverlay('menu');
     updateBoardUI();
@@ -502,6 +505,34 @@
   function backToMenu(){ toMenu(); }
 
   // Overlay buttons
+  // Handlers diretos para botões (pointerup = mais confiável no mobile)
+  function handleCmd(cmd){
+    if(cmd==='start') startGame();
+    else if(cmd==='difficulty') changeDifficulty();
+    else if(cmd==='sound') toggleSound();
+    else if(cmd==='controls') toggleControls();
+    else if(cmd==='credits') { alert('Cambrussi Gear — Cambrussi Games Inc.'); }
+    else if(cmd==='resume') togglePause();
+    else if(cmd==='restart') restart();
+    else if(cmd==='menu') backToMenu();
+    else if(cmd==='saveScore'){
+      const name = (O.initials.value||'---').slice(0,8);
+      const board = loadBoard();
+      board.push({name, score: score|0});
+      board.sort((a,b)=>b.score-a.score);
+      saveBoard(board);
+      localStorage.setItem('cg_best_v2', String(Math.max(best, score|0)));
+      O.initials.value='';
+      updateBoardUI();
+      backToMenu();
+    }
+  }
+  document.querySelectorAll('button[data-cmd]').forEach(btn=>{
+    btn.addEventListener('pointerup', (e)=>{
+      const cmd = btn.dataset.cmd; handleCmd(cmd);
+    });
+  });
+
   addEventListener('click', (e)=>{
     const btn = e.target.closest('button[data-cmd]');
     if(!btn) return;
@@ -527,12 +558,18 @@
     }
   });
 
+
+  // Evita scroll durante gestos de jogo
+  window.addEventListener('touchmove', (e)=>{ e.preventDefault(); }, { passive:false });
+
   // Bind inputs
   document.querySelectorAll('.controls .btn').forEach(bindTouchButtons);
   bindKeys();
 
   // Public API
   async function load(){
+    // garante controles na tela se mobile
+    document.querySelector('.controls').style.display = controlsMode===1? 'grid':'none';
     [A.bg, A.carRed, A.carYellow, A.carPurple, A.carGreen, A.pu_shield, A.pu_slow, A.pu_life, A.pu_coin] = await Promise.all([
       loadImage('assets/bg_tile.png'),
       loadImage('assets/car_red.png'),
@@ -547,6 +584,16 @@
     ]);
     Sound.load();
   }
+
+
+  // Auto pause on background (mobile friendly)
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      if (state===STATE.PLAY) { state=STATE.PAUSE; showOverlay('pause'); Sound.stop('engine'); }
+    } else {
+      // do nothing; user can retomar
+    }
+  });
 
   window.__miniGame = {
     async start(){

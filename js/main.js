@@ -20,6 +20,12 @@
 
   txt.addEventListener('animationend', proceed);
 
+  // Fallback: se 'animationend' não disparar (alguns celulares), seguimos em 2.5s
+  const failSafe = setTimeout(() => {
+    if (document.getElementById('splash')) proceed();
+  }, 2500);
+
+
   // tocar/ clicar também já considera um gesto p/ áudio no mobile
   splash.addEventListener('pointerdown', () => {
     // pula direto para o estado final do giro
