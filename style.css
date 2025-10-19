@@ -1,0 +1,104 @@
+:root{
+  --ink:#e8f0ff; --accent:#ff2d2d; --bgA:#0d1736; --bgB:#070b18;
+  --panel:#101527cc; --panelBorder:#ffffff2a;
+  --fontGame:'Press Start 2P', system-ui, sans-serif;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  background:linear-gradient(var(--bgA),var(--bgB));
+  color:var(--ink);
+  font:500 14px/1.4 system-ui, Segoe UI, Roboto, Ubuntu, Arial;
+  touch-action:none;
+}
+
+canvas{
+  display:block;
+  width:100svw;
+  height:100svh;
+  image-rendering:pixelated;
+  image-rendering:crisp-edges;
+}
+
+/* HUD */
+.hud{
+  position:fixed; inset:auto 0 0 0;
+  display:flex; gap:.5rem; justify-content:center;
+  padding:.4rem 0;
+  pointer-events:none;
+}
+.hud .tag{
+  font-family:var(--fontGame);
+  font-size:11px;
+  background:#ffffff1c;
+  border:1px solid #ffffff30;
+  border-radius:.5rem;
+  padding:.3rem .45rem;
+}
+
+/* Overlays */
+.overlay{ position:fixed; inset:0; display:grid; place-items:center; background:rgba(3,6,12,0.6) }
+.overlay.hidden{ display:none }
+.panel{
+  width:min(520px, 92vw);
+  background:var(--panel); border:1px solid var(--panelBorder);
+  border-radius:14px; padding:20px; color:#eef3ff;
+  box-shadow:0 10px 40px #0008;
+}
+.panel h1{ font-family:var(--fontGame); font-size:clamp(18px,7vw,28px); margin:0 0 10px; color:var(--accent); text-align:center }
+.panel .brand{ text-align:center; opacity:.85; margin-top:-4px; margin-bottom:12px }
+.panel .opts{ display:grid; gap:10px; margin-top:10px }
+.panel .opts button{
+  font-family:var(--fontGame); font-size:12px; padding:10px; border-radius:10px;
+  background:#ffffff14; border:1px solid #ffffff2c; color:#fff; cursor:pointer;
+}
+.panel .opts input{
+  font-family:var(--fontGame); font-size:12px; padding:10px; border-radius:10px;
+  background:#0d1022; border:1px solid #ffffff2c; color:#fff;
+}
+.panel .board{ margin-top:14px }
+.panel .board h2{ font:700 12px var(--fontGame); margin:0 0 8px }
+.panel .board ol{ margin:0; padding-left:20px; }
+
+.panel.small{ width:min(420px, 92vw) }
+
+/* Touch controls */
+.controls{
+  pointer-events:none;
+  position:fixed; inset:0;
+  display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr
+}
+.btn{pointer-events:auto}
+.btn.half{background:radial-gradient(closest-side,#ffffff12,#0000)}
+.btn.left{grid-column:1;grid-row:1/span 2}
+.btn.right{grid-column:2;grid-row:1/span 2}
+.btn.brake{grid-column:1;grid-row:2}
+.btn.accel{grid-column:2;grid-row:2}
+@media (min-width:900px){ .btn.half{display:none} }
+
+/* Splash (2 giros + 2s hold + fade) */
+.splash{
+  position:fixed; inset:0;
+  display:grid; place-items:center;
+  background:radial-gradient(120% 120% at 50% 50%, var(--bgA) 0%, var(--bgB) 70%);
+  z-index:10;
+}
+.spinWrap{perspective:1000px; display:grid; gap:10px; place-items:center}
+.spinTxt{
+  font:900 clamp(18px,8vw,48px)/1 var(--fontGame);
+  color:var(--accent);
+  text-transform:uppercase;
+  text-shadow:0 2px 0 #000a,0 0 18px #ff2d2d66;
+  transform-style:preserve-3d;
+  animation:spin2 1.8s ease-in-out 1 both; /* 2 giros e pára */
+}
+.spinTxt.hold{ animation: none } /* estado parado por 2s */
+.spinTxt.fadeText{ animation: textfade .7s ease forwards }
+.hint{font-family:var(--fontGame);font-size:10px;opacity:.8}
+
+@keyframes spin2{ 0%{transform:rotateY(0)} 100%{transform:rotateY(720deg)} }
+@keyframes textfade{ to{ opacity:0; transform:translateY(-6px) } }
+
+.splash.fade{animation:fadeout .7s ease forwards}
+@keyframes fadeout{to{opacity:0;visibility:hidden}}

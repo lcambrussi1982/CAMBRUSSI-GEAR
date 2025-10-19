@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#ff2d2d" />
+  <title>Cambrussi Gear — 8-bit</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Splash: “cambrussi games inc.” gira 2x, segura 2s e some com fade -->
+  <div id="splash" class="splash" aria-label="Abertura Cambrussi Games Inc.">
+    <div class="spinWrap">
+      <div class="spinTxt" aria-live="off">cambrussi games inc.</div>
+      <div class="hint">toque ou aguarde…</div>
+    </div>
+  </div>
+
+  <!-- Canvas do jogo -->
+  <canvas id="game" aria-label="Pista de corrida (top-down)" role="img"></canvas>
+
+  <!-- HUD -->
+  <div id="hud" class="hud" aria-hidden="true">
+    <div class="tag" id="hudLives">♥♥♥</div>
+    <div class="tag" id="hudSpeed">SPD 000</div>
+    <div class="tag" id="hudScore">SCORE 000000</div>
+    <div class="tag" id="hudTime">00:00.000</div>
+  </div>
+
+  <!-- Overlays -->
+  <div id="overlayMenu" class="overlay hidden">
+    <div class="panel">
+      <h1>Cambrussi Gear</h1>
+      <p class="brand">by Cambrussi Games Inc.</p>
+      <div class="opts">
+        <button data-cmd="start">Start</button>
+        <button data-cmd="controls">Controles: <span id="ctlLabel">Swipe</span></button>
+        <button data-cmd="difficulty">Dificuldade: <span id="diffLabel">Normal</span></button>
+        <button data-cmd="sound">Som: <span id="soundLabel">On</span></button>
+        <button data-cmd="credits">Créditos</button>
+      </div>
+      <div class="board">
+        <h2>Leaderboard</h2>
+        <ol id="boardList"></ol>
+      </div>
+    </div>
+  </div>
+
+  <div id="overlayPause" class="overlay hidden">
+    <div class="panel small">
+      <h1>Pause</h1>
+      <div class="opts">
+        <button data-cmd="resume">Continuar</button>
+        <button data-cmd="restart">Reiniciar</button>
+        <button data-cmd="menu">Menu</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="overlayGameOver" class="overlay hidden">
+    <div class="panel">
+      <h1>Game Over</h1>
+      <p>Score: <span id="finalScore">0</span></p>
+      <div class="opts">
+        <input id="initials" maxlength="8" placeholder="Seu nome/ini." />
+        <button data-cmd="saveScore">Salvar Score</button>
+        <button data-cmd="restart">Jogar de novo</button>
+        <button data-cmd="menu">Menu</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Controles mobile -->
+  <div class="controls" aria-hidden="true">
+    <button type="button" class="btn half left"  data-act="left"  aria-label="Mover para a esquerda"></button>
+    <button type="button" class="btn half right" data-act="right" aria-label="Mover para a direita"></button>
+    <button type="button" class="btn half brake" data-act="brake" aria-label="Frear"></button>
+    <button type="button" class="btn half accel" data-act="accel" aria-label="Acelerar"></button>
+  </div>
+
+  <noscript>
+    <p style="text-align:center;color:#fff;padding:1rem">
+      Este jogo precisa de JavaScript para funcionar. Ative o JavaScript no seu navegador.
+    </p>
+  </noscript>
+
+  <script src="js/game.js" defer></script>
+  <script src="js/main.js" defer></script>
+</body>
+</html>
