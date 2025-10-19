@@ -1,20 +1,22 @@
 /* =========================
-   Cambrussi Gear — tema GLASS + botões redondos
+   Cambrussi Gear — GLASS RADICAL (HUD no topo, botões fora da pista)
    ========================= */
 :root{
   --ink:#eaf2ff;
   --accent:#ff375f;
   --bgA:#0a0f24;
   --bgB:#060913;
+
   --glassA:rgba(255,255,255,0.18);
   --glassB:rgba(255,255,255,0.08);
   --glassBorder:rgba(255,255,255,0.28);
   --glassShadow:0 10px 34px rgba(0,0,0,0.45);
   --fontGame:'Press Start 2P', system-ui, sans-serif;
-  /* controles */
-  --btnSize:clamp(78px, 18vw, 130px);
-  --btnGap:clamp(10px, 2.6vw, 18px);
-  --accSize:clamp(96px, 22vw, 160px);
+
+  /* controles (pensados p/ ficarem no “gramado” ~13vw de cada lado) */
+  --btnSize:clamp(74px, 15vw, 122px);   /* setas */
+  --accSize:clamp(92px, 19vw, 160px);   /* acelerar */
+  --btnGap:clamp(10px, 2.5vw, 18px);
 }
 *{box-sizing:border-box}
 html,body{height:100%}
@@ -26,7 +28,10 @@ body{
     linear-gradient(var(--bgA),var(--bgB));
   color:var(--ink);
   font:500 14px/1.4 system-ui, Segoe UI, Roboto, Ubuntu, Arial;
-  touch-action:none; overscroll-behavior:none;
+
+  /* mobile safe */
+  touch-action:none;
+  overscroll-behavior:none;
   -webkit-user-select:none; user-select:none;
 }
 
@@ -35,15 +40,23 @@ canvas{
   display:block;
   width:100svw; height:100svh;
   image-rendering:pixelated; image-rendering:crisp-edges;
-  z-index:1;
+  z-index:1;           /* base */
+  position:relative;
 }
 
-/* ===== HUD (glass) ===== */
+/* ===== HUD (AGORA NO TOPO, tipo barra glass) ===== */
 .hud{
-  position:fixed; inset:auto 0 0 0;
-  display:flex; gap:.5rem; justify-content:center;
-  padding:calc(.5rem + env(safe-area-inset-bottom)) 0 .6rem;
-  pointer-events:none; z-index:5;
+  position:fixed;
+  top:0; left:0; right:0; bottom:auto;
+  display:flex; gap:.5rem; justify-content:center; align-items:center;
+  padding:calc(.55rem + env(safe-area-inset-top)) .6rem .55rem;
+  z-index:12;          /* acima dos controles */
+  pointer-events:none;
+  background:linear-gradient(135deg, rgba(6,10,18,.35), rgba(6,10,18,.05));
+  backdrop-filter:saturate(150%) blur(12px);
+  -webkit-backdrop-filter:saturate(150%) blur(12px);
+  border-bottom:1px solid rgba(255,255,255,.18);
+  box-shadow:0 10px 34px rgba(0,0,0,.35);
 }
 .hud .tag{
   font-family:var(--fontGame);
@@ -53,12 +66,10 @@ canvas{
   border-radius:12px;
   padding:.35rem .6rem;
   box-shadow:var(--glassShadow);
-  backdrop-filter:saturate(140%) blur(12px);
-  -webkit-backdrop-filter:saturate(140%) blur(12px);
 }
 
 /* ===== Overlays (glass) ===== */
-.overlay{ position:fixed; inset:0; display:grid; place-items:center; background:rgba(6,10,18,0.55); z-index:8 }
+.overlay{ position:fixed; inset:0; display:grid; place-items:center; background:rgba(6,10,18,0.55); z-index:20 }
 .overlay.hidden{ display:none }
 .panel{
   width:min(520px, 92vw);
@@ -85,7 +96,6 @@ canvas{
   box-shadow:var(--glassShadow);
   backdrop-filter:saturate(150%) blur(10px);
 }
-.panel .opts button:active{ transform:translateY(1px) }
 .panel .opts input{
   font-family:var(--fontGame); font-size:12px; padding:10px; border-radius:12px;
   background:linear-gradient(135deg,rgba(255,255,255,.12),rgba(255,255,255,.06));
@@ -93,10 +103,6 @@ canvas{
   box-shadow:var(--glassShadow);
   backdrop-filter:saturate(150%) blur(10px);
 }
-.panel .board{ margin-top:14px }
-.panel .board h2{ font:700 12px var(--fontGame); margin:0 0 8px }
-.panel .board ol{ margin:0; padding-left:20px; }
-
 .panel.small{ width:min(420px, 92vw) }
 
 /* ===== Splash ===== */
@@ -106,16 +112,16 @@ canvas{
   background:
     radial-gradient(120% 120% at 50% 50%, rgba(16,26,58,.6) 0%, rgba(7,11,24,.8) 70%),
     linear-gradient(var(--bgA),var(--bgB));
-  z-index:20;
+  z-index:30;
 }
 .spinWrap{perspective:1000px; display:grid; gap:10px; place-items:center}
 .spinTxt{
   font:900 clamp(18px,8vw,48px)/1 var(--fontGame);
   color:var(--accent);
   text-transform:uppercase;
-  text-shadow:0 2px 0 #000a,0 0 20px #ff375f72;
+  text-shadow:0 2px 0 #000a, 0 0 20px #ff375f72;
   transform-style:preserve-3d;
-  animation:spin2 1.8s ease-in-out 1 both;
+  animation:spin2 1.8s ease-in-out 1 both; /* 2 giros e pára */
 }
 .spinTxt.hold{ animation:none }
 .spinTxt.fadeText{ animation:textfade .7s ease forwards }
@@ -126,16 +132,20 @@ canvas{
 @keyframes fadeout{to{opacity:0;visibility:hidden}}
 @media (prefers-reduced-motion: reduce){ .spinTxt{ animation:none } }
 
-/* ===== Controles: botões redondos e alinhados (glass) =====
-   Layout: ESQUERDA (↑ botão Direita empilhado acima do Esquerda) / DIREITA = Acelerar */
+/* ===== CONTROLES — CIRCULARES, NOS GUTTERS (fora da pista) =====
+   Esq.: [←] embaixo e [→] acima (empilhados) — Dir.: [ACELERAR] grande
+   Posicionamos por vw, respeitando ~13vw de grama que a pista não ocupa. */
 .controls{
   position:fixed; inset:0; z-index:6;
   pointer-events:none;
-  padding: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right))
-           max(16px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+  padding:
+    max(12px, env(safe-area-inset-top))
+    max(10px, env(safe-area-inset-right))
+    max(14px, env(safe-area-inset-bottom))
+    max(10px, env(safe-area-inset-left));
 }
 
-/* Base do botão circular (glass) */
+/* Botão circular glass */
 .controls .btn{
   position:absolute;
   pointer-events:auto;
@@ -152,16 +162,13 @@ canvas{
   opacity:.98;
 }
 .controls .btn:active{ transform:scale(.98); opacity:1 }
-
-/* Ícones internos */
 .controls .btn::before{ content:""; display:block; margin:auto }
 
-/* — Acelerar (direita) — círculo maior */
+/* Direita: Acelerar — grande, bem na borda direita (gramado) */
 .controls .accel{
-  right: calc(env(safe-area-inset-right) + var(--btnGap));
-  bottom: calc(env(safe-area-inset-bottom) + var(--btnGap));
+  right: calc(2vw + env(safe-area-inset-right));
+  bottom: calc(2.2vh + env(safe-area-inset-bottom));
   width:var(--accSize); height:var(--accSize);
-  box-shadow:0 12px 36px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.25);
 }
 .controls .accel::before{
   width:58%; height:14%;
@@ -170,22 +177,22 @@ canvas{
   box-shadow:0 0 16px rgba(166,247,190,.65), inset 0 0 3px #fff;
 }
 
-/* — Esquerda (inferior esquerdo) */
+/* Esquerda: setas empilhadas no canto esquerdo (gramado) */
 .controls .left{
-  left: calc(env(safe-area-inset-left) + var(--btnGap));
-  bottom: calc(env(safe-area-inset-bottom) + var(--btnGap));
+  left: calc(2vw + env(safe-area-inset-left));
+  bottom: calc(2.2vh + env(safe-area-inset-bottom));
 }
+.controls .right{
+  left: calc(2vw + env(safe-area-inset-left));
+  bottom: calc(2.2vh + env(safe-area-inset-bottom) + var(--btnSize) + var(--btnGap));
+}
+
+/* Triângulos das setas */
 .controls .left::before{
   width:0; height:0; margin-top:calc(50% - 18px);
   border-style:solid; border-width:22px 30px 22px 0;
   border-color:transparent #cfe7ff transparent transparent;
   filter:drop-shadow(0 0 8px rgba(207,231,255,.5));
-}
-
-/* — Direita (acima do “Esquerda”) */
-.controls .right{
-  left: calc(env(safe-area-inset-left) + var(--btnGap));
-  bottom: calc(env(safe-area-inset-bottom) + var(--btnGap) + var(--btnSize) + var(--btnGap));
 }
 .controls .right::before{
   width:0; height:0; margin-top:calc(50% - 18px);
@@ -194,22 +201,34 @@ canvas{
   filter:drop-shadow(0 0 8px rgba(207,231,255,.5));
 }
 
-/* Paisagem: deixa um pouco menores para não cobrir demais */
+/* Paisagem: tudo um pouco menor e mais para os cantos */
 @media (orientation:landscape){
   :root{
-    --btnSize:clamp(70px, 14vw, 110px);
-    --accSize:clamp(86px, 18vw, 140px);
+    --btnSize:clamp(66px, 12vw, 100px);
+    --accSize:clamp(78px, 14vw, 130px);
+  }
+  .controls .accel{
+    right: calc(1.6vw + env(safe-area-inset-right));
+    bottom: calc(1.8vh + env(safe-area-inset-bottom));
+  }
+  .controls .left{
+    left: calc(1.6vw + env(safe-area-inset-left));
+    bottom: calc(1.8vh + env(safe-area-inset-bottom));
+  }
+  .controls .right{
+    left: calc(1.6vw + env(safe-area-inset-left));
+    bottom: calc(1.8vh + env(safe-area-inset-bottom) + var(--btnSize) + var(--btnGap));
   }
 }
 
-/* Desktop: esconder controles touch */
+/* Desktop: esconde */
 @media (min-width:900px){
   .controls{ display:none }
 }
 
-/* ===== Dica tap-to-start ===== */
+/* ===== Dica tap-to-start (continua visível) ===== */
 .tapStart{
-  position:fixed; left:0; right:0; bottom:14vh; text-align:center; z-index:7;
+  position:fixed; left:0; right:0; bottom:14vh; text-align:center; z-index:10;
   font-family:var(--fontGame); font-size:12px; letter-spacing:1px;
   color:#eaf2ff; text-shadow:0 2px 0 #0008;
   opacity:.85; pointer-events:none;
