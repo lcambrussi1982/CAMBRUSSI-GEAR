@@ -1,66 +1,97 @@
+/* =========================
+   Cambrussi Gear — tema GLASS + botões redondos
+   ========================= */
 :root{
-  --ink:#e8f0ff; --accent:#ff2d2d; --bgA:#0d1736; --bgB:#070b18;
-  --panel:#101527cc; --panelBorder:#ffffff2a;
+  --ink:#eaf2ff;
+  --accent:#ff375f;
+  --bgA:#0a0f24;
+  --bgB:#060913;
+  --glassA:rgba(255,255,255,0.18);
+  --glassB:rgba(255,255,255,0.08);
+  --glassBorder:rgba(255,255,255,0.28);
+  --glassShadow:0 10px 34px rgba(0,0,0,0.45);
   --fontGame:'Press Start 2P', system-ui, sans-serif;
+  /* controles */
+  --btnSize:clamp(78px, 18vw, 130px);
+  --btnGap:clamp(10px, 2.6vw, 18px);
+  --accSize:clamp(96px, 22vw, 160px);
 }
 *{box-sizing:border-box}
 html,body{height:100%}
 body{
   margin:0;
-  background:linear-gradient(var(--bgA),var(--bgB));
+  background:
+    radial-gradient(140% 120% at 20% 10%, #13204a 0%, transparent 50%),
+    radial-gradient(140% 140% at 80% 80%, #1c2f6a 0%, transparent 52%),
+    linear-gradient(var(--bgA),var(--bgB));
   color:var(--ink);
   font:500 14px/1.4 system-ui, Segoe UI, Roboto, Ubuntu, Arial;
-  touch-action:none;                /* sem rolagem/bounce */
-  overscroll-behavior:none;
-  -webkit-user-select:none;
-  user-select:none;
+  touch-action:none; overscroll-behavior:none;
+  -webkit-user-select:none; user-select:none;
 }
 
+/* ===== Canvas ===== */
 canvas{
   display:block;
-  width:100svw;
-  height:100svh;
-  image-rendering:pixelated;
-  image-rendering:crisp-edges;
+  width:100svw; height:100svh;
+  image-rendering:pixelated; image-rendering:crisp-edges;
   z-index:1;
 }
 
-/* HUD */
+/* ===== HUD (glass) ===== */
 .hud{
   position:fixed; inset:auto 0 0 0;
   display:flex; gap:.5rem; justify-content:center;
-  padding:calc(0.4rem + env(safe-area-inset-bottom)) 0 .4rem;
+  padding:calc(.5rem + env(safe-area-inset-bottom)) 0 .6rem;
   pointer-events:none; z-index:5;
 }
 .hud .tag{
   font-family:var(--fontGame);
-  font-size:11px;
-  background:#ffffff1c;
-  border:1px solid #ffffff30;
-  border-radius:.5rem;
-  padding:.3rem .45rem;
+  font-size:11px; letter-spacing:.5px;
+  background:linear-gradient(135deg,var(--glassA),var(--glassB));
+  border:1px solid var(--glassBorder);
+  border-radius:12px;
+  padding:.35rem .6rem;
+  box-shadow:var(--glassShadow);
+  backdrop-filter:saturate(140%) blur(12px);
+  -webkit-backdrop-filter:saturate(140%) blur(12px);
 }
 
-/* Overlays */
-.overlay{ position:fixed; inset:0; display:grid; place-items:center; background:rgba(3,6,12,0.6); z-index:8 }
+/* ===== Overlays (glass) ===== */
+.overlay{ position:fixed; inset:0; display:grid; place-items:center; background:rgba(6,10,18,0.55); z-index:8 }
 .overlay.hidden{ display:none }
 .panel{
   width:min(520px, 92vw);
-  background:var(--panel); border:1px solid var(--panelBorder);
-  border-radius:14px; padding:20px; color:#eef3ff;
-  box-shadow:0 10px 40px #0008;
+  background:linear-gradient(135deg,var(--glassA),var(--glassB));
+  border:1px solid var(--glassBorder);
+  border-radius:16px; padding:20px; color:#f4f7ff;
+  box-shadow:var(--glassShadow);
+  backdrop-filter:saturate(160%) blur(16px);
+  -webkit-backdrop-filter:saturate(160%) blur(16px);
 }
-.panel h1{ font-family:var(--fontGame); font-size:clamp(18px,7vw,28px); margin:0 0 10px; color:var(--accent); text-align:center }
+.panel h1{
+  font-family:var(--fontGame);
+  font-size:clamp(18px,7vw,28px);
+  margin:0 0 10px; color:var(--accent); text-align:center;
+  text-shadow:0 2px 0 #0008, 0 0 18px #ff375f66;
+}
 .panel .brand{ text-align:center; opacity:.85; margin-top:-4px; margin-bottom:12px }
 .panel .opts{ display:grid; gap:10px; margin-top:10px }
 .panel .opts button{
-  font-family:var(--fontGame); font-size:12px; padding:12px; border-radius:10px;
-  background:#ffffff14; border:1px solid #ffffff2c; color:#fff; cursor:pointer;
+  font-family:var(--fontGame); font-size:12px; padding:12px; border-radius:12px;
+  background:linear-gradient(135deg,rgba(255,255,255,.16),rgba(255,255,255,.08));
+  border:1px solid rgba(255,255,255,.28); color:#fff; cursor:pointer;
   -webkit-tap-highlight-color: transparent;
+  box-shadow:var(--glassShadow);
+  backdrop-filter:saturate(150%) blur(10px);
 }
+.panel .opts button:active{ transform:translateY(1px) }
 .panel .opts input{
-  font-family:var(--fontGame); font-size:12px; padding:10px; border-radius:10px;
-  background:#0d1022; border:1px solid #ffffff2c; color:#fff;
+  font-family:var(--fontGame); font-size:12px; padding:10px; border-radius:12px;
+  background:linear-gradient(135deg,rgba(255,255,255,.12),rgba(255,255,255,.06));
+  border:1px solid rgba(255,255,255,.26); color:#fff;
+  box-shadow:var(--glassShadow);
+  backdrop-filter:saturate(150%) blur(10px);
 }
 .panel .board{ margin-top:14px }
 .panel .board h2{ font:700 12px var(--fontGame); margin:0 0 8px }
@@ -68,11 +99,13 @@ canvas{
 
 .panel.small{ width:min(420px, 92vw) }
 
-/* Splash (2 giros + 2s hold + fade) */
+/* ===== Splash ===== */
 .splash{
   position:fixed; inset:0;
   display:grid; place-items:center;
-  background:radial-gradient(120% 120% at 50% 50%, var(--bgA) 0%, var(--bgB) 70%);
+  background:
+    radial-gradient(120% 120% at 50% 50%, rgba(16,26,58,.6) 0%, rgba(7,11,24,.8) 70%),
+    linear-gradient(var(--bgA),var(--bgB));
   z-index:20;
 }
 .spinWrap{perspective:1000px; display:grid; gap:10px; place-items:center}
@@ -80,111 +113,105 @@ canvas{
   font:900 clamp(18px,8vw,48px)/1 var(--fontGame);
   color:var(--accent);
   text-transform:uppercase;
-  text-shadow:0 2px 0 #000a,0 0 18px #ff2d2d66;
+  text-shadow:0 2px 0 #000a,0 0 20px #ff375f72;
   transform-style:preserve-3d;
-  animation:spin2 1.8s ease-in-out 1 both; /* 2 giros e pára */
+  animation:spin2 1.8s ease-in-out 1 both;
 }
-.spinTxt.hold{ animation: none } /* estado parado por 2s */
-.spinTxt.fadeText{ animation: textfade .7s ease forwards }
+.spinTxt.hold{ animation:none }
+.spinTxt.fadeText{ animation:textfade .7s ease forwards }
 .hint{font-family:var(--fontGame);font-size:10px;opacity:.8}
-
 @keyframes spin2{ 0%{transform:rotateY(0)} 100%{transform:rotateY(720deg)} }
 @keyframes textfade{ to{ opacity:0; transform:translateY(-6px) } }
-
 .splash.fade{animation:fadeout .7s ease forwards}
 @keyframes fadeout{to{opacity:0;visibility:hidden}}
+@media (prefers-reduced-motion: reduce){ .spinTxt{ animation:none } }
 
-/* Reduce motion */
-@media (prefers-reduced-motion: reduce){
-  .spinTxt{ animation: none }
-}
-
-/* === CONTROLES MOBILE — layout: esquerda = [←][→], direita = [ACELERAR] === */
+/* ===== Controles: botões redondos e alinhados (glass) =====
+   Layout: ESQUERDA (↑ botão Direita empilhado acima do Esquerda) / DIREITA = Acelerar */
 .controls{
   position:fixed; inset:0; z-index:6;
-  pointer-events:none;           /* só botões recebem eventos */
+  pointer-events:none;
   padding: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right))
-           max(14px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+           max(16px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
 }
 
-/* Botão base */
+/* Base do botão circular (glass) */
 .controls .btn{
   position:absolute;
   pointer-events:auto;
-  border:none; outline:none;
-  background:radial-gradient(closest-side,#0b0e22,#070a18);
-  border:2px solid #2b335f;
-  box-shadow:0 6px 18px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06);
-  border-radius:18px;
+  width:var(--btnSize); height:var(--btnSize);
+  border-radius:9999px;
+  border:1px solid var(--glassBorder);
+  background:linear-gradient(135deg,var(--glassA),var(--glassB));
+  box-shadow:var(--glassShadow), inset 0 1px 0 rgba(255,255,255,.25);
+  backdrop-filter:saturate(180%) blur(14px);
+  -webkit-backdrop-filter:saturate(180%) blur(14px);
   -webkit-tap-highlight-color: transparent;
   touch-action:manipulation;
-  opacity:.95;
-  transition:transform .02s ease, opacity .12s ease;
+  transition:transform .02s ease, opacity .12s ease, box-shadow .12s ease;
+  opacity:.98;
 }
-.controls .btn:active{ transform:translateY(1px); opacity:1; }
+.controls .btn:active{ transform:scale(.98); opacity:1 }
 
-/* Ícones simples */
-.controls .btn::before{
-  content:""; display:block; margin:auto;
-}
+/* Ícones internos */
+.controls .btn::before{ content:""; display:block; margin:auto }
 
-/* --- Acelerador (direita) --- */
+/* — Acelerar (direita) — círculo maior */
 .controls .accel{
-  right: max(10px, env(safe-area-inset-right));
-  bottom: max(12px, env(safe-area-inset-bottom));
-  width: clamp(120px, 28vw, 230px);
-  height: clamp(120px, 34vh, 360px);
+  right: calc(env(safe-area-inset-right) + var(--btnGap));
+  bottom: calc(env(safe-area-inset-bottom) + var(--btnGap));
+  width:var(--accSize); height:var(--accSize);
+  box-shadow:0 12px 36px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.25);
 }
 .controls .accel::before{
-  width: 64%; height: 16%;
-  background:#b7ffb7; border-radius:10px; margin-top: 38%;
-  box-shadow:0 0 12px #b7ffb799, inset 0 0 2px #fff;
+  width:58%; height:14%;
+  background:linear-gradient(180deg, #d8ffe1, #a6f7be);
+  border-radius:9999px; margin-top:38%;
+  box-shadow:0 0 16px rgba(166,247,190,.65), inset 0 0 3px #fff;
 }
 
-/* --- Direita/Esquerda (lado esquerdo, dois botões) --- */
-.controls .left,
-.controls .right{
-  left: max(10px, env(safe-area-inset-left));
-  width: clamp(80px, 22vw, 180px);
-  height: clamp(70px, 14vh, 150px);
-  bottom: max(12px, env(safe-area-inset-bottom));
-}
+/* — Esquerda (inferior esquerdo) */
 .controls .left{
-  transform-origin:center;
-  translate: 0 calc(-2px - clamp(6px, 1vh, 20px));
+  left: calc(env(safe-area-inset-left) + var(--btnGap));
+  bottom: calc(env(safe-area-inset-bottom) + var(--btnGap));
 }
-.controls .right{
-  translate: calc(clamp(8px, 2vw, 24px) + clamp(80px, 22vw, 180px)) 0;
+.controls .left::before{
+  width:0; height:0; margin-top:calc(50% - 18px);
+  border-style:solid; border-width:22px 30px 22px 0;
+  border-color:transparent #cfe7ff transparent transparent;
+  filter:drop-shadow(0 0 8px rgba(207,231,255,.5));
 }
 
-/* Setas */
-.controls .left::before{
-  width:0; height:0; margin-top: calc(40% - 10px);
-  border-style:solid; border-width:20px 26px 20px 0;
-  border-color: transparent #bcdcff transparent transparent;
+/* — Direita (acima do “Esquerda”) */
+.controls .right{
+  left: calc(env(safe-area-inset-left) + var(--btnGap));
+  bottom: calc(env(safe-area-inset-bottom) + var(--btnGap) + var(--btnSize) + var(--btnGap));
 }
 .controls .right::before{
-  width:0; height:0; margin-top: calc(40% - 10px);
-  border-style:solid; border-width:20px 0 20px 26px;
-  border-color: transparent transparent transparent #bcdcff;
+  width:0; height:0; margin-top:calc(50% - 18px);
+  border-style:solid; border-width:22px 0 22px 30px;
+  border-color:transparent transparent transparent #cfe7ff;
+  filter:drop-shadow(0 0 8px rgba(207,231,255,.5));
 }
 
-/* Paisagem: um pouco menores pra não cobrir a pista */
+/* Paisagem: deixa um pouco menores para não cobrir demais */
 @media (orientation:landscape){
-  .controls .accel{ width: clamp(110px, 22vw, 200px); height: clamp(110px, 36vh, 280px); }
-  .controls .left, .controls .right{ height: clamp(64px, 18vh, 120px); }
+  :root{
+    --btnSize:clamp(70px, 14vw, 110px);
+    --accSize:clamp(86px, 18vw, 140px);
+  }
 }
 
-/* Desktop: esconder */
+/* Desktop: esconder controles touch */
 @media (min-width:900px){
   .controls{ display:none }
 }
 
-/* Tap-to-start helper */
+/* ===== Dica tap-to-start ===== */
 .tapStart{
   position:fixed; left:0; right:0; bottom:14vh; text-align:center; z-index:7;
   font-family:var(--fontGame); font-size:12px; letter-spacing:1px;
   color:#eaf2ff; text-shadow:0 2px 0 #0008;
-  opacity:.8; pointer-events:none;
+  opacity:.85; pointer-events:none;
 }
 .hiddenTap{ display:none }
