@@ -13,6 +13,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+
+  <!-- CSS principal -->
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -26,6 +28,8 @@
 
   <!-- Canvas do jogo -->
   <canvas id="game" aria-label="Pista de corrida (top-down)" role="img"></canvas>
+
+  <!-- Dica de toque quando estiver no menu -->
   <div id="tapToStart" class="tapStart">Toque para Iniciar</div>
 
   <!-- HUD -->
@@ -37,17 +41,19 @@
   </div>
 
   <!-- Overlays -->
-  <div id="overlayMenu" class="overlay hidden">
+  <div id="overlayMenu" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="menuTitle">
     <div class="panel">
-      <h1>Cambrussi Gear</h1>
+      <h1 id="menuTitle">Cambrussi Gear</h1>
       <p class="brand">by Cambrussi Games Inc.</p>
+
       <div class="opts">
-        <button data-cmd="start">Start</button>
-        <button data-cmd="controls">Controles: <span id="ctlLabel">Swipe</span></button>
-        <button data-cmd="difficulty">Dificuldade: <span id="diffLabel">Normal</span></button>
-        <button data-cmd="sound">Som: <span id="soundLabel">On</span></button>
-        <button data-cmd="credits">Créditos</button>
+        <button type="button" data-cmd="start">Start</button>
+        <button type="button" data-cmd="controls">Controles: <span id="ctlLabel">Botões</span></button>
+        <button type="button" data-cmd="difficulty">Dificuldade: <span id="diffLabel">Normal</span></button>
+        <button type="button" data-cmd="sound">Som: <span id="soundLabel">On</span></button>
+        <button type="button" data-cmd="credits">Créditos</button>
       </div>
+
       <div class="board">
         <h2>Leaderboard</h2>
         <ol id="boardList"></ol>
@@ -55,35 +61,34 @@
     </div>
   </div>
 
-  <div id="overlayPause" class="overlay hidden">
+  <div id="overlayPause" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="pauseTitle">
     <div class="panel small">
-      <h1>Pause</h1>
+      <h1 id="pauseTitle">Pause</h1>
       <div class="opts">
-        <button data-cmd="resume">Continuar</button>
-        <button data-cmd="restart">Reiniciar</button>
-        <button data-cmd="menu">Menu</button>
+        <button type="button" data-cmd="resume">Continuar</button>
+        <button type="button" data-cmd="restart">Reiniciar</button>
+        <button type="button" data-cmd="menu">Menu</button>
       </div>
     </div>
   </div>
 
-  <div id="overlayGameOver" class="overlay hidden">
+  <div id="overlayGameOver" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="overTitle">
     <div class="panel">
-      <h1>Game Over</h1>
+      <h1 id="overTitle">Game Over</h1>
       <p>Score: <span id="finalScore">0</span></p>
       <div class="opts">
-        <input id="initials" maxlength="8" placeholder="Seu nome/ini." />
-        <button data-cmd="saveScore">Salvar Score</button>
-        <button data-cmd="restart">Jogar de novo</button>
-        <button data-cmd="menu">Menu</button>
+        <input id="initials" maxlength="8" placeholder="Seu nome/ini." aria-label="Nome para o placar" />
+        <button type="button" data-cmd="saveScore">Salvar Score</button>
+        <button type="button" data-cmd="restart">Jogar de novo</button>
+        <button type="button" data-cmd="menu">Menu</button>
       </div>
     </div>
   </div>
 
-  <!-- Controles mobile grandes -->
+  <!-- Controles mobile (ACELERAR à direita; ESQUERDA/DIREITA à esquerda) -->
   <div class="controls" aria-hidden="false">
-    <button type="button" class="btn left"  data-act="left"  aria-label="Esquerda"></button>
-    <button type="button" class="btn right" data-act="right" aria-label="Direita"></button>
-    <button type="button" class="btn brake" data-act="brake" aria-label="Frear"></button>
+    <button type="button" class="btn left"  data-act="left"  aria-label="Virar à esquerda"></button>
+    <button type="button" class="btn right" data-act="right" aria-label="Virar à direita"></button>
     <button type="button" class="btn accel" data-act="accel" aria-label="Acelerar"></button>
   </div>
 
@@ -93,6 +98,7 @@
     </p>
   </noscript>
 
+  <!-- Scripts -->
   <script src="js/game.js" defer></script>
   <script src="js/main.js" defer></script>
 </body>
